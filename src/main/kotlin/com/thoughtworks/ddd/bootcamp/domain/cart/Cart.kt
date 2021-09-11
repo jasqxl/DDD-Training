@@ -1,23 +1,31 @@
 package com.thoughtworks.ddd.bootcamp.domain.cart
 
 import com.thoughtworks.ddd.bootcamp.domain.product.Product
+import com.thoughtworks.ddd.bootcamp.domain.product.ProductPricingService
+import com.thoughtworks.ddd.bootcamp.domain.product.ProductType
 import java.util.UUID
+
+enum class CartStatus {
+    CHECKED_OUT, PENDING
+}
+
+data class Order(val products: List<Product>)
 
 class Cart {
     private val id: String = UUID.randomUUID().toString()
+    private var status: CartStatus = CartStatus.PENDING
 
     private val productQuantityMapping: HashMap<Product, Int> = hashMapOf()
     private val deletedProductQuantityMap: HashMap<Product, Int> = hashMapOf()
 
+    private val productPricingService = ProductPricingService()
+
     fun addProducts(product: Product, quantity: Int) {
-        val currentQuantity = productQuantityMapping[product]
-
-        if (currentQuantity == null) {
-            productQuantityMapping[product] = quantity
-
-        } else {
-            productQuantityMapping[product] = currentQuantity + quantity
-        }
+//        productQuantityMapping[product] = Optional.ofNullable(productQuantityMapping[product])
+//            .map { currentQuantity -> currentQuantity + quantity }
+//            .orElse(quantity)
+        productQuantityMapping[product] =
+            productQuantityMapping[product]?.let { it + quantity } ?: quantity
     }
 
     fun removeProducts(product: Product, quantity: Int) {
@@ -51,6 +59,17 @@ class Cart {
         result = 31 * result + productQuantityMapping.hashCode()
         result = 31 * result + deletedProductQuantityMap.hashCode()
         return result
+    }
+
+    fun addProductsWithDiscountedPrice(productType: ProductType, quantity: Int) {
+        this.addProducts(productPricingService.getProduct(productType), quantity)
+    }
+
+    fun getStatus(): CartStatus = this.status
+
+    fun checkOut(): Order {
+        status = CartStatus.CHECKED_OUT
+        return Order(getItems().map { e -> IntRange(0, e.quantity).map { e.product } }.flatten())
     }
 }
 

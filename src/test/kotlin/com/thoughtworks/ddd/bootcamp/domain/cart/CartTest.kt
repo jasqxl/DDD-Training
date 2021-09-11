@@ -12,9 +12,40 @@ internal class CartTest {
     private val gmCricketBat = Product(type = ProductType.GM_CRICKET_BAT, price = Price(20.0))
 
     @Test
-    fun `should initialize a cart with no products`() {
+    fun `should initialize a cart with no products and status as PENDING`() {
         val cart = Cart()
         assertThat(cart.getItems()).isEmpty()
+        assertThat(cart.getStatus()).isEqualTo(CartStatus.PENDING)
+    }
+
+    @Test
+    fun `should update cart status from PENDING to CHECKED_OUT and return a list of products`() {
+        val cart = Cart()
+
+        cart.addProductsWithDiscountedPrice(ProductType.HERO_INK_PEN, 2)
+        cart.addProductsWithDiscountedPrice(ProductType.IPAD_PRO, 1)
+
+        assertThat(cart.getStatus()).isEqualTo(CartStatus.PENDING)
+
+        val productsCheckedOut = cart.checkOut()
+
+        assertThat(cart.getStatus()).isEqualTo(CartStatus.CHECKED_OUT)
+        assertThat(productsCheckedOut.products).containsOnly(
+            Product(type = ProductType.IPAD_PRO, price = Price(1100.1 * 0.9)),
+            Product(type = ProductType.HERO_INK_PEN, price = Price(13.65 * 0.9)),
+            Product(type = ProductType.HERO_INK_PEN, price = Price(13.65 * 0.9))
+        )
+    }
+
+    @Test
+    fun `should add ipad pro with discounted pricing`() {
+        val cart = Cart()
+
+        cart.addProductsWithDiscountedPrice(ProductType.IPAD_PRO, 1)
+
+        val product = cart.getItems().first().product
+
+        assertThat(product.price.value).isEqualTo(1100.1 * 0.9)
     }
 
     @Test
