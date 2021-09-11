@@ -1,18 +1,18 @@
 package com.thoughtworks.ddd.bootcamp.domain.cart
 
+import com.thoughtworks.ddd.bootcamp.domain.Entity
+import com.thoughtworks.ddd.bootcamp.domain.ValueObject
 import com.thoughtworks.ddd.bootcamp.domain.product.Product
 import com.thoughtworks.ddd.bootcamp.domain.product.ProductPricingService
 import com.thoughtworks.ddd.bootcamp.domain.product.ProductType
-import java.util.UUID
 
 enum class CartStatus {
     CHECKED_OUT, PENDING
 }
 
-data class Order(val products: List<Product>)
+data class Order(val products: List<Product>) : ValueObject
 
-class Cart {
-    private val id: String = UUID.randomUUID().toString()
+class Cart : Entity() {
     private var status: CartStatus = CartStatus.PENDING
 
     private val productQuantityMapping: HashMap<Product, Int> = hashMapOf()
@@ -47,20 +47,6 @@ class Cart {
     private fun HashMap<Product, Int>.getItemsFromMap(): List<Item> =
         this.entries.map { e -> Item(e.key, e.value) }
 
-    override fun equals(other: Any?): Boolean {
-        if (other != null && other is Cart) {
-            return this.id == other.id
-        }
-        return false
-    }
-
-    override fun hashCode(): Int {
-        var result = id.hashCode()
-        result = 31 * result + productQuantityMapping.hashCode()
-        result = 31 * result + deletedProductQuantityMap.hashCode()
-        return result
-    }
-
     fun addProductsWithDiscountedPrice(productType: ProductType, quantity: Int) {
         this.addProducts(productPricingService.getProduct(productType), quantity)
     }
@@ -73,4 +59,4 @@ class Cart {
     }
 }
 
-data class Item(val product: Product, val quantity: Int)
+data class Item(val product: Product, val quantity: Int) : ValueObject
