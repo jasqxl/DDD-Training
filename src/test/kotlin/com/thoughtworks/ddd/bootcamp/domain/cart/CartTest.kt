@@ -73,14 +73,15 @@ internal class CartTest {
 
         assertThat(cart.getRemovedItems()).containsOnly(Item(gmCricketBat, 2), Item(iPadPro, 1))
     }
-//    @Test
-//    fun `should differentiate 1 cart from another cart`() {
-//        val cart1 = Cart()
-//        val cart2 = Cart()
-//
-//        cart1.addProducts(heroInkPen, 1)
-//        cart2.addProducts(heroInkPen, 1)
-//
-//        assertThat(cart1).usingRecursiveComparison().isNotEqualTo(cart2)
-//    }
+
+    @Test
+    fun `should differentiate 1 cart from another cart`() {
+        val cart1 = Cart()
+        val cart2 = Cart()
+
+        cart1.addProducts(heroInkPen, 1)
+        cart2.addProducts(heroInkPen, 1)
+
+        assertThat(cart1).usingRecursiveComparison().isNotEqualTo(cart2)
+    }
 }
