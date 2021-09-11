@@ -1,14 +1,15 @@
 package com.thoughtworks.ddd.bootcamp.domain.cart
 
+import com.thoughtworks.ddd.bootcamp.domain.product.Price
 import com.thoughtworks.ddd.bootcamp.domain.product.Product
 import com.thoughtworks.ddd.bootcamp.domain.product.ProductType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class CartTest {
-    private val iPadPro = Product(ProductType.IPAD_PRO)
-    private val heroInkPen = Product(ProductType.HERO_INK_PEN)
-    private val gmCricketBat = Product(ProductType.GM_CRICKET_BAT)
+    private val iPadPro = Product(type = ProductType.IPAD_PRO, price = Price(1100.1))
+    private val heroInkPen = Product(type = ProductType.HERO_INK_PEN, price = Price(13.65))
+    private val gmCricketBat = Product(type = ProductType.GM_CRICKET_BAT, price = Price(20.0))
 
     @Test
     fun `should initialize a cart with no products`() {
